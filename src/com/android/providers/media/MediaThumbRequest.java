@@ -174,10 +174,10 @@ class MediaThumbRequest {
         if (mPath != null) {
             if (mIsVideo) {
                 bitmap = ThumbnailUtils.createVideoThumbnail(mPath,
-                        Video.Thumbnails.MINI_KIND);
+                        Video.Thumbnails.MICRO_KIND);
             } else {
                 bitmap = ThumbnailUtils.createImageThumbnail(mPath,
-                        Images.Thumbnails.MINI_KIND);
+                        Images.Thumbnails.MICRO_KIND);
             }
             if (bitmap == null) {
                 Log.w(TAG, "Can't create mini thumbnail for " + mPath);
