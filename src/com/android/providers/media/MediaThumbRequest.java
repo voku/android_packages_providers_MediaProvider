@@ -174,10 +174,10 @@ class MediaThumbRequest {
         if (mPath != null) {
             if (mIsVideo) {
                 bitmap = ThumbnailUtils.createVideoThumbnail(mPath,
-                        Video.Thumbnails.MICRO_KIND);
+                        Video.Thumbnails.MINI_KIND);
             } else {
                 bitmap = ThumbnailUtils.createImageThumbnail(mPath,
-                        Images.Thumbnails.MICRO_KIND);
+                        Images.Thumbnails.MINI_KIND);
             }
             if (bitmap == null) {
                 Log.w(TAG, "Can't create mini thumbnail for " + mPath);
@@ -187,9 +187,7 @@ class MediaThumbRequest {
             Uri uri = updateDatabase(bitmap);
             if (uri != null) {
                 OutputStream thumbOut = mCr.openOutputStream(uri);
-                // testing
-                // bitmap.compress(Bitmap.CompressFormat.JPEG, 95, thumbOut);
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 85, thumbOut);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, thumbOut);
                 thumbOut.close();
             }
         }
@@ -201,9 +199,7 @@ class MediaThumbRequest {
 
         if (bitmap != null) {
             ByteArrayOutputStream miniOutStream = new ByteArrayOutputStream();
-            // testing
-            // bitmap.compress(Bitmap.CompressFormat.JPEG, 85, miniOutStream);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 75, miniOutStream);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, miniOutStream);
             bitmap.recycle();
             byte [] data = null;
 
