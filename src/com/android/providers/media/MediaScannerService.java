@@ -53,6 +53,7 @@ public class MediaScannerService extends Service implements Runnable
     private volatile Looper mServiceLooper;
     private volatile ServiceHandler mServiceHandler;
     private PowerManager.WakeLock mWakeLock;
+    private boolean mScanFinished;
     
     private void openDatabase(String volumeName) {
         try {
@@ -125,6 +126,7 @@ public class MediaScannerService extends Service implements Runnable
     {
         PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
         mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
+	mScanFinished = false;
 
         // Start up the thread running the service.  Note that we create a
         // separate thread because the service normally runs in the process's
@@ -154,7 +156,8 @@ public class MediaScannerService extends Service implements Runnable
         Message msg = mServiceHandler.obtainMessage();
         msg.arg1 = startId;
         msg.obj = intent.getExtras();
-        mServiceHandler.sendMessage(msg);
+	// send delayed message to allow complete mounting of storage(s)
+        mServiceHandler.sendMessageDelayed(msg, 5000);
 
         // Try again later if we are killed before we can finish scanning.
         return Service.START_REDELIVER_INTENT;
@@ -164,7 +167,7 @@ public class MediaScannerService extends Service implements Runnable
     public void onDestroy()
     {
         // Make sure thread has started before telling it to quit.
-        while (mServiceLooper == null) {
+	while (mServiceLooper == null && !mScanFinished) {
             synchronized (this) {
                 try {
                     wait(100);
@@ -172,6 +175,7 @@ public class MediaScannerService extends Service implements Runnable
                 }
             }
         }
+	Log.d(TAG, "onDestroy, quitting looper");
         mServiceLooper.quit();
     }
 
@@ -303,6 +307,7 @@ public class MediaScannerService extends Service implements Runnable
                 Log.e(TAG, "Exception in handleMessage", e);
             }
 
+            mScanFinished = true;
             stopSelf(msg.arg1);
         }
     };
